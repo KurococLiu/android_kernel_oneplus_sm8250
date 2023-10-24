@@ -341,7 +341,10 @@ static ssize_t gadget_dev_desc_UDC_store(struct config_item *item,
 			gi->composite.gadget_driver.udc_name = NULL;
 			goto err;
 		}
-		schedule_work(&gi->work);
+		// avoid 21.09(HID_REQ_SET_REPORT) trigger this
+		if ((c->bRequestType & USB_TYPE_MASK) == USB_TYPE_STANDARD) {
+			schedule_work(&gi->work);
+		}
 	}
 	mutex_unlock(&gi->lock);
 	return len;
